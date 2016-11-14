@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+
+	<!--  HandlerMappiing & HandlerAdapter 생성 -->
+	<mvc:annotation-driven />
+	
+	<!-- Interceptor 등록 -->
+
+
+	<!-- Command Validator -->
+	<bean id="validator"
+			class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+	
+	<!-- Static Resources 설정 -->
+	<!-- Location : /WEB-INF 이하의 물리적 경로 -->
+	<!-- Mapping : URL Pattern -->
+	<!-- mapping="/js/**" /js/jquery/jquery-3.1.11.js -->
+	<mvc:resources location="/WEB-INF/resources/js/" mapping="/js/**" />
+	<mvc:resources location="/WEB-INF/resources/css/" mapping="/css/**" />
+	<mvc:resources location="/WEB-INF/resources/img/" mapping="/img/**" />
+	
+	
+	
+	<!-- ViewResolver 생성 -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/view/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	
+	<!-- FileUpload 설정 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="104857600"/> <!-- 100MB -->
+		<property name="defaultEncoding" value="UTF-8"/>
+	</bean>
+	
+	<!-- Exception Handler -->
+	
+	<!-- IndexController 등록 -->
+	<bean	id="productController"
+			class="com.dat.web.ProductController">
+		<property name="productService" ref="productService" />
+	</bean>
+		
+</beans>

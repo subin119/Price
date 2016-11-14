@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<bean	id="productService"
+		class="com.dat.service.impl.ProductServiceImpl">
+	<property name="productBiz" ref="productBiz" />
+</bean>
+
+<bean	id="productBiz"
+		class="com.dat.biz.impl.ProductBizImpl">
+	<property name="productDao" ref="productDao" />
+</bean>
+
+<bean	id="productDao"
+		class="com.dat.dao.impl.ProductDaoImpl">
+	<property name="sqlSessionTemplate" ref="sqlSessionTemplate" />
+</bean>
+
+</beans>

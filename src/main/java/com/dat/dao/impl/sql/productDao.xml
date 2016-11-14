@@ -1,0 +1,182 @@
+<?xml version= "1.0" encoding= "UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+						"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="productDao">
+
+	<select id="getAllProduct"
+			resultType="ProductVO"
+			parameterType="ProductSearchVO">
+	SELECT	*
+	FROM	(
+				SELECT	A.*
+						, ROWNUM RNUM	
+				FROM	(
+							SELECT 	/* [productDao.xml][getAllProduct] */
+									PRDCT_ID productId
+									, PRDCT_NM productName
+									, CONT content
+									, PRC price
+									, TO_CHAR(CRT_DT, 'YYYY-MM-DD HH24:MI') createdDate
+							FROM 	PRDCT
+							<where>
+							<if test="searchType == 1">
+							AND		PRDCT_NM LIKE '%' || #{searchKeyword} || '%'
+							</if>
+							<if test="searchType == 2">
+							AND 	PRC LIKE '%' || #{searchKeyword} || '%'
+							</if>
+							<if test="minNumber != 0">
+							AND		PRC >= #{minNumber}
+							</if>
+							<if test="maxNumber != 0">
+							AND		PRC <![CDATA[<=]]> #{maxNumber}
+							</if>
+							<if test="order == 'desc'">
+							ORDER	BY	PRC	DESC
+							</if>
+							<if test="order == 'asc'">
+							ORDER	BY	PRC
+							</if>
+							<if test="order == 'new'">
+							ORDER	BY	CRT_DT	DESC
+							</if>
+							</where>
+						)	A
+				WHERE	ROWNUM <![CDATA[<=]]> #{endNumber}
+			)
+	WHERE	RNUM >= #{startNumber}
+	</select>
+	
+	<insert id="addNewProduct"
+			parameterType="ProductVO">
+		INSERT INTO /* [productDao.xml][addNewProduct] */
+					PRDCT	(
+	   							PRDCT_ID
+	   							, PRDCT_NM
+	   							, CONT
+	   							, PRC
+	   							, CRT_DT
+   							) 
+		VALUES				( 
+								'PR-' || TO_CHAR(SYSDATE, 'YYYYMMDD') || '-' || LPAD(PRDCT_ID_SEQ.NEXTVAL, 6, '0')
+								, #{productName}
+								, #{content}
+								, #{price}
+								, SYSDATE
+							)
+	</insert>
+	
+	<select id="getProductById"
+			resultType="ProductVO"
+			parameterType="string">
+		SELECT 	/* [productDao.xml][getProductById] */
+				PRDCT_ID productId
+				, PRDCT_NM productName
+				, CONT content
+				, PRC price
+				, TO_CHAR(CRT_DT, 'YYYY-MM-DD HH24:MI') createdDate
+		FROM 	PRDCT	
+		WHERE	PRDCT_ID = #{productId}
+	</select>
+	
+	<update id="doModifyProduct"
+			parameterType="ProductVO">
+		UPDATE	PRDCT
+		SET		PRDCT_NM = #{productName}
+				, CONT = #{content}
+				, PRC = #{price}
+		WHERE	PRDCT_ID = #{productId}
+	</update>
+	
+	<delete id="deleteProductById"
+			parameterType="string">
+		DELETE
+		FROM	PRDCT
+		WHERE	PRDCT_ID = #{productId}
+	</delete>
+	
+	<select id="getProductCount"
+			resultType="_int"
+			parameterType="ProductSearchVO">
+		SELECT	COUNT(1)
+		FROM	PRDCT
+		<where>
+		<if test="searchType == 1">
+		AND		PRDCT_NM LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="searchType == 2">
+		AND 	PRC LIKE '%' || #{searchKeyword} || '%'
+		</if>
+		<if test="minNumber != 0">
+		AND		PRC >= #{minNumber}
+		</if>
+		<if test="maxNumber != 0">
+		AND		PRC <![CDATA[<=]]> #{maxNumber}
+		</if>
+		</where>
+	</select>
+	
+	<select id="getHighPriceProduct"
+			resultType="ProductVO"
+			parameterType="ProductSearchVO">
+	SELECT	*
+	FROM	(
+				SELECT	A.*
+						, ROWNUM RNUM	
+				FROM	(
+							SELECT 	/* [productDao.xml][getHighPriceProduct] */
+									PRDCT_ID productId
+									, PRDCT_NM productName
+									, CONT content
+									, PRC price
+									, TO_CHAR(CRT_DT, 'YYYY-MM-DD HH24:MI') createdDate
+							FROM 	PRDCT
+							<if test="searchType == 1">
+							WHERE	PRDCT_NM LIKE '%' || #{searchKeyword} || '%'
+							</if>
+							<if test="searchType == 2">
+							WHERE	PRC LIKE '%' || #{searchKeyword} || '%'
+							</if>
+							<if test="searchType == 3">
+							WHERE	PRC LIKE '%' || #{searchKeyword} || '%'
+							AND		PRC BETWEEN '1000' AND '10000'
+							</if>
+							ORDER	BY	PRC DESC
+						)	A
+				WHERE	ROWNUM <![CDATA[<=]]> #{endNumber}
+			)
+	WHERE	RNUM >= #{startNumber}
+	</select>
+	
+	<select id="getLowPriceProduct"
+			resultType="ProductVO"
+			parameterType="ProductSearchVO">
+	SELECT	*
+	FROM	(
+				SELECT	A.*
+						, ROWNUM RNUM	
+				FROM	(
+							SELECT 	/* [productDao.xml][getLowPriceProduct] */
+									PRDCT_ID productId
+									, PRDCT_NM productName
+									, CONT content
+									, PRC price
+									, TO_CHAR(CRT_DT, 'YYYY-MM-DD HH24:MI') createdDate
+							FROM 	PRDCT
+							<if test="searchType == 1">
+							WHERE	PRDCT_NM LIKE '%' || #{searchKeyword} || '%'
+							</if>
+							<if test="searchType == 2">
+							WHERE	PRC LIKE '%' || #{searchKeyword} || '%'
+							</if>
+							<if test="searchType == 3">
+							WHERE	PRC LIKE '%' || #{searchKeyword} || '%'
+							AND		PRC BETWEEN '1000' AND '10000'
+							</if>
+							ORDER	BY	PRC
+						)	A
+				WHERE	ROWNUM <![CDATA[<=]]> #{endNumber}
+			)
+	WHERE	RNUM >= #{startNumber}
+	</select>
+</mapper>
